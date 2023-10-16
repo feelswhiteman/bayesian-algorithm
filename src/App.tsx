@@ -2,7 +2,7 @@ import DataTable from "./components/DataTable";
 import FrequencyTable from "./components/FrequencyTable";
 import LikelihoodTable from "./components/LikelihoodTable";
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Data {
     mood: string;
@@ -38,41 +38,61 @@ const var1: Data[] = [
 console.log(var1);
 
 function App() {
+    const [inputValues, setInputValues] = useState<Data[]>([]);
     const [moodInput, setMoodInput] = useState("");
     const [attendanceInput, setAttendanceInput] = useState("Так");
-
     const [problemMoodInput, setProblemMoodInput] = useState("");
     const [problemAttendanceInput, setProblemAttendanceInput] = useState("Так");
+    const [moodCounts, setMoodCounts] = useState<MoodCounts>({});
+    const [totalMoodCounts, setTotalMoodCounts] = useState<MoodCounts>({});
+    const [totalYesCount, setTotalYesCount] = useState<number>(0);
+    const [totalNoCount, setTotalNoCount] = useState<number>(0);
+    const [PMoodAttend, setPMoodAttend] = useState<number>(0);
+    const [PMood, setPMood] = useState<number>(0);
+    const [PAttend, setPAttend] = useState<number>(0);
+    const [PAttendMood, setPAttendMood] = useState<number>(0);
+    const [uniqueMoods, setUniqueMoods] = useState<string[]>([]);
 
-    const [inputValues, setInputValues] = useState<Data[]>([]);
+    useEffect(() => {
+        const moodCounts: MoodCounts = {};
+        const totalMoodCounts: MoodCounts = {};
+        inputValues.forEach((item) => {
+            const { mood, attendance } = item;
+            if (!moodCounts[mood]) {
+                moodCounts[mood] = 0;
+            }
+            if (!totalMoodCounts[mood]) {
+                totalMoodCounts[mood] = 0;
+            }
+            if (attendance === "Так") {
+                moodCounts[mood]++;
+            }
+            totalMoodCounts[mood]++;
+        });
 
-    const uniqueMoods = [...new Set(inputValues.map((item) => item.mood))];
-    const moodCounts: MoodCounts = {};
-    const totalMoodCounts: MoodCounts = {};
+        const totalYesCount = Object.values(moodCounts).reduce((acc, count) => acc + count, 0);
+        const totalNoCount = inputValues.length - totalYesCount;
+        const uniqueMoods = [...new Set(inputValues.map((item) => item.mood))];
 
-    inputValues.forEach((item) => {
-        const { mood, attendance } = item;
+        const problemMood = problemMoodInput;
+        const problemAttendance = problemAttendanceInput;
+        const newPMoodAttend = moodCounts[problemMood] / (problemAttendance === "Так" ? totalYesCount : totalNoCount);
+        const newPMood = totalMoodCounts[problemMood] / inputValues.length;
+        const newPAttend = (problemAttendance === "Так" ? totalYesCount : totalNoCount) / inputValues.length;
+        const newPAttendMood = (newPMoodAttend * newPAttend) / newPMood;
 
-        if (!moodCounts[mood]) {
-            moodCounts[mood] = 0;
-        }
+        // Update state with new values
+        setMoodCounts(moodCounts);
+        setTotalMoodCounts(totalMoodCounts);
+        setTotalYesCount(totalYesCount);
+        setTotalNoCount(totalNoCount);
+        setPMoodAttend(newPMoodAttend);
+        setPMood(newPMood);
+        setPAttend(newPAttend);
+        setPAttendMood(newPAttendMood);
+        setUniqueMoods(uniqueMoods);
 
-        if (!totalMoodCounts[mood]) {
-            totalMoodCounts[mood] = 0;
-        }
-
-        if (attendance === "Так") {
-            moodCounts[mood]++;
-        }
-
-        totalMoodCounts[mood]++;
-    });
-
-    const totalYesCount: number = Object.values(moodCounts).reduce(
-        (acc, count) => acc + count,
-        0
-    );
-    const totalNoCount: number = inputValues.length - totalYesCount;
+    }, [inputValues, problemMoodInput, problemAttendanceInput]);
 
     const handleAddRow = () => {
         if (attendanceInput !== "Так" && attendanceInput !== "Ні") return;
@@ -80,22 +100,10 @@ function App() {
             mood: moodInput,
             attendance: attendanceInput,
         };
-        // setMoodInput("");
         setInputValues([...inputValues, inputData]);
-        setProblemMoodInput(inputData.mood);
+        // setProblemMoodInput(inputData.mood);
+        // setProblemAttendanceInput(inputData.attendance);
     };
-
-    const PMoodAttend =
-        moodCounts[problemMoodInput] /
-        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount);
-
-    const PMood = totalMoodCounts[problemMoodInput] / inputValues.length;
-
-    const PAttend =
-        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount) /
-        inputValues.length;
-
-    const PAttendMood = (PMoodAttend * PAttend) / PMood;
 
     return (
         <>
@@ -198,7 +206,7 @@ function App() {
                         <br />
                         <span>
                             Значить що {problemMoodInput} студент буде
-                            відвідувати пари з вірогідністю {PAttendMood * 100}%
+                            відвідувати пари з вірогідністю {(PAttendMood * 100).toFixed(2)}%
                         </span>
                     </div>
                 </div>
