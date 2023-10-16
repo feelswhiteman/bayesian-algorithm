@@ -1,5 +1,6 @@
-import DataTable from "./components/DataTable/DataTable";
-import FrequencyTable from "./components/FrequencyTable/FrequencyTable";
+import DataTable from "./components/DataTable";
+import FrequencyTable from "./components/FrequencyTable";
+import LikelihoodTable from "./components/LikelihoodTable";
 import "./App.css";
 import { useState } from "react";
 
@@ -79,9 +80,12 @@ function App() {
             <button className="add-button" onClick={handleAddRow}>
                 Додати
             </button>
-            <div className="grid">
+            <div className="table-grid">
                 <DataTable data={inputValues}></DataTable>
-                <FrequencyTable data={inputValues}></FrequencyTable>
+                <div className="split-rows">
+                    <FrequencyTable data={inputValues}></FrequencyTable>
+                    <LikelihoodTable data={inputValues}></LikelihoodTable>
+                </div>
             </div>
         </>
     );

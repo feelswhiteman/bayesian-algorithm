@@ -24,7 +24,7 @@ tr:hover {
 
 td,
 th {
-    padding: 3px 100px;
+    padding: 3px 40px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

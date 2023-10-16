@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import Data from "../../types/Data";
+import Data from "../types/Data";
 
 interface TableProps {
     data: Data[];
