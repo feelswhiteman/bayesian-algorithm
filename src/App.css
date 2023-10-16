@@ -5,13 +5,32 @@
   text-align: center;
 }
 
+input,
+select {
+  font-size: 18px;
+  width: 200px;
+}
+
 .flex {
   padding: 0px 0px;
   display: flex;
-  justify-content: space-between;
 }
 
 .table-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr;
+}
+
+.add-button {
+  display: grid;
+  margin-top: 10px;
+}
+
+span {
+  font-size: 20px;
 }
