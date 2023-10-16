@@ -44,7 +44,7 @@ function App() {
             mood: moodInput,
             attendance: attendanceInput,
         };
-        setMoodInput("");
+        // setMoodInput("");
         setInputValues([...inputValues, inputData]);
     };
 
@@ -79,8 +79,10 @@ function App() {
             <button className="add-button" onClick={handleAddRow}>
                 Додати
             </button>
-            <DataTable data={inputValues}></DataTable>
-            <FrequencyTable data={inputValues}></FrequencyTable>
+            <div className="grid">
+                <DataTable data={inputValues}></DataTable>
+                <FrequencyTable data={inputValues}></FrequencyTable>
+            </div>
         </>
     );
 }

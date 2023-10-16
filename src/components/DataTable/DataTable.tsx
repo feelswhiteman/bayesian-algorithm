@@ -12,7 +12,8 @@ interface TableProps {
 
 const DataTable: React.FC<TableProps> = ({data}): ReactElement => {
     return (
-        <>
+        <div>
+        <h2>Таблиця даних</h2>
             <table>
                 <thead>
                     <tr>
@@ -29,7 +30,7 @@ const DataTable: React.FC<TableProps> = ({data}): ReactElement => {
                     ))}
                 </tbody>
             </table>
-        </>
+        </div>
     );
 };
 
