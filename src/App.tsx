@@ -84,6 +84,20 @@ function App() {
         setInputValues([...inputValues, inputData]);
     };
 
+    const PMoodAttend = (
+        moodCounts[problemMoodInput] /
+        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount)
+    ).toFixed(2);
+
+    const PMood = (
+        totalMoodCounts[problemMoodInput] / inputValues.length
+    ).toFixed(2);
+
+    const PAttend = (
+        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount) /
+        inputValues.length
+    ).toFixed(2);
+
     return (
         <>
             <button className="add-button" onClick={() => setInputValues(var1)}>
@@ -150,8 +164,8 @@ function App() {
                                     </option>
                                 ))}
                             </select>
-                            ) = P({problemMoodInput}|{problemAttendanceInput}) * P (
-                            {problemAttendanceInput}) / P({problemMoodInput})
+                            ) = P({problemMoodInput}|{problemAttendanceInput}) *
+                            P ({problemAttendanceInput}) / P({problemMoodInput})
                         </span>
                         <br />
                         <span>
