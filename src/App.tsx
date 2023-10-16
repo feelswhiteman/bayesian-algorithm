@@ -43,7 +43,7 @@ function App() {
     const [attendanceInput, setAttendanceInput] = useState("Так");
     const [problemMoodInput, setProblemMoodInput] = useState("");
     const [problemAttendanceInput, setProblemAttendanceInput] = useState("Так");
-    const [moodCounts, setMoodCounts] = useState<MoodCounts>({});
+    const [moodYesCounts, setMoodYesCounts] = useState<MoodCounts>({});
     const [totalMoodCounts, setTotalMoodCounts] = useState<MoodCounts>({});
     const [totalYesCount, setTotalYesCount] = useState<number>(0);
     const [totalNoCount, setTotalNoCount] = useState<number>(0);
@@ -54,35 +54,52 @@ function App() {
     const [uniqueMoods, setUniqueMoods] = useState<string[]>([]);
 
     useEffect(() => {
-        const moodCounts: MoodCounts = {};
+        const moodYesCounts: MoodCounts = {};
+        const moodNoCounts: MoodCounts = {};
         const totalMoodCounts: MoodCounts = {};
         inputValues.forEach((item) => {
             const { mood, attendance } = item;
-            if (!moodCounts[mood]) {
-                moodCounts[mood] = 0;
+            if (!moodYesCounts[mood]) {
+                moodYesCounts[mood] = 0;
+            }
+            if (!moodNoCounts[mood]) {
+                moodNoCounts[mood] = 0;
             }
             if (!totalMoodCounts[mood]) {
                 totalMoodCounts[mood] = 0;
             }
             if (attendance === "Так") {
-                moodCounts[mood]++;
+                moodYesCounts[mood]++;
+            }
+            if (attendance === "Ні") {
+                moodNoCounts[mood]++;
             }
             totalMoodCounts[mood]++;
         });
 
-        const totalYesCount = Object.values(moodCounts).reduce((acc, count) => acc + count, 0);
-        const totalNoCount = inputValues.length - totalYesCount;
+        const totalYesCount = Object.values(moodYesCounts).reduce(
+            (acc, count) => acc + count,
+            0
+        );
+        const totalNoCount = Object.values(moodYesCounts).reduce(
+            (acc, count) => acc + count,
+            0
+        );
         const uniqueMoods = [...new Set(inputValues.map((item) => item.mood))];
 
         const problemMood = problemMoodInput;
         const problemAttendance = problemAttendanceInput;
-        const newPMoodAttend = moodCounts[problemMood] / (problemAttendance === "Так" ? totalYesCount : totalNoCount);
+        const newPMoodAttend =
+            problemAttendance === "Так"
+                ? moodYesCounts[problemMood] / totalYesCount
+                : moodNoCounts[problemMood] / totalNoCount;
         const newPMood = totalMoodCounts[problemMood] / inputValues.length;
-        const newPAttend = (problemAttendance === "Так" ? totalYesCount : totalNoCount) / inputValues.length;
+        const newPAttend =
+            (problemAttendance === "Так" ? totalYesCount : totalNoCount) /
+            inputValues.length;
         const newPAttendMood = (newPMoodAttend * newPAttend) / newPMood;
 
-        // Update state with new values
-        setMoodCounts(moodCounts);
+        setMoodYesCounts(moodYesCounts);
         setTotalMoodCounts(totalMoodCounts);
         setTotalYesCount(totalYesCount);
         setTotalNoCount(totalNoCount);
@@ -91,7 +108,6 @@ function App() {
         setPAttend(newPAttend);
         setPAttendMood(newPAttendMood);
         setUniqueMoods(uniqueMoods);
-
     }, [inputValues, problemMoodInput, problemAttendanceInput]);
 
     const handleAddRow = () => {
@@ -101,8 +117,6 @@ function App() {
             attendance: attendanceInput,
         };
         setInputValues([...inputValues, inputData]);
-        // setProblemMoodInput(inputData.mood);
-        // setProblemAttendanceInput(inputData.attendance);
     };
 
     return (
@@ -141,7 +155,7 @@ function App() {
                 <div className="split-rows">
                     <FrequencyTable data={inputValues}></FrequencyTable>
                     <LikelihoodTable data={inputValues}></LikelihoodTable>
-                    <div style={{textAlign: "left"}}>
+                    <div style={{ textAlign: "left" }}>
                         <h2>Задача</h2>
                         <span>
                             P(
@@ -165,6 +179,7 @@ function App() {
                                 }
                                 name="taskMoodSelected"
                             >
+                                <option value=""></option>
                                 {uniqueMoods.map((mood, index) => (
                                     <option key={index} value={mood}>
                                         {mood}
@@ -177,7 +192,7 @@ function App() {
                         <br />
                         <span>
                             P({problemMoodInput}|{problemAttendanceInput}) ={" "}
-                            {moodCounts[problemMoodInput]} /{" "}
+                            {moodYesCounts[problemMoodInput]} /{" "}
                             {problemAttendanceInput === "Так"
                                 ? totalYesCount
                                 : totalNoCount}{" "}
@@ -200,13 +215,14 @@ function App() {
                         <br />
                         <span>
                             P({problemAttendanceInput}|{problemMoodInput}) ={" "}
-                            {PMoodAttend.toFixed(2)} * {PAttend.toFixed(2)} / {PMood.toFixed(2)} ={" "}
-                            {PAttendMood.toFixed(2)}
+                            {PMoodAttend.toFixed(2)} * {PAttend.toFixed(2)} /{" "}
+                            {PMood.toFixed(2)} = {PAttendMood.toFixed(2)}
                         </span>
                         <br />
                         <span>
-                            Значить що {problemMoodInput} студент буде
-                            відвідувати пари з вірогідністю {(PAttendMood * 100).toFixed(2)}%
+                            Значить що {problemMoodInput} студент {problemAttendanceInput === "Так" ? "" : "не "} буде
+                            відвідувати пари з вірогідністю{" "}
+                            {(PAttendMood * 100).toFixed(2)}%
                         </span>
                     </div>
                 </div>
