@@ -82,21 +82,20 @@ function App() {
         };
         // setMoodInput("");
         setInputValues([...inputValues, inputData]);
+        setProblemMoodInput(inputData.mood);
     };
 
-    const PMoodAttend = (
+    const PMoodAttend =
         moodCounts[problemMoodInput] /
-        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount)
-    ).toFixed(2);
+        (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount);
 
-    const PMood = (
-        totalMoodCounts[problemMoodInput] / inputValues.length
-    ).toFixed(2);
+    const PMood = totalMoodCounts[problemMoodInput] / inputValues.length;
 
-    const PAttend = (
+    const PAttend =
         (problemAttendanceInput === "Так" ? totalYesCount : totalNoCount) /
-        inputValues.length
-    ).toFixed(2);
+        inputValues.length;
+
+    const PAttendMood = (PMoodAttend * PAttend) / PMood;
 
     return (
         <>
@@ -134,7 +133,7 @@ function App() {
                 <div className="split-rows">
                     <FrequencyTable data={inputValues}></FrequencyTable>
                     <LikelihoodTable data={inputValues}></LikelihoodTable>
-                    <div>
+                    <div style={{textAlign: "left"}}>
                         <h2>Задача</h2>
                         <span>
                             P(
@@ -174,23 +173,13 @@ function App() {
                             {problemAttendanceInput === "Так"
                                 ? totalYesCount
                                 : totalNoCount}{" "}
-                            ={" "}
-                            {(
-                                moodCounts[problemMoodInput] /
-                                (problemAttendanceInput === "Так"
-                                    ? totalYesCount
-                                    : totalNoCount)
-                            ).toFixed(2)}
+                            = {PMoodAttend.toFixed(2)}
                         </span>
                         <br />
                         <span>
                             P({problemMoodInput}) ={" "}
                             {totalMoodCounts[problemMoodInput]} /{" "}
-                            {inputValues.length} ={" "}
-                            {(
-                                totalMoodCounts[problemMoodInput] /
-                                inputValues.length
-                            ).toFixed(2)}
+                            {inputValues.length} = {PMood.toFixed(2)}
                         </span>
                         <br />
                         <span>
@@ -198,16 +187,18 @@ function App() {
                             {problemAttendanceInput === "Так"
                                 ? totalYesCount
                                 : totalNoCount}{" "}
-                            / {inputValues.length} ={" "}
-                            {(
-                                (problemAttendanceInput === "Так"
-                                    ? totalYesCount
-                                    : totalNoCount) / inputValues.length
-                            ).toFixed(2)}
+                            / {inputValues.length} = {PAttend.toFixed(2)}
                         </span>
                         <br />
                         <span>
-                            P({problemAttendanceInput}|{problemMoodInput}) =
+                            P({problemAttendanceInput}|{problemMoodInput}) ={" "}
+                            {PMoodAttend.toFixed(2)} * {PAttend.toFixed(2)} / {PMood.toFixed(2)} ={" "}
+                            {PAttendMood.toFixed(2)}
+                        </span>
+                        <br />
+                        <span>
+                            Значить що {problemMoodInput} студент буде
+                            відвідувати пари з вірогідністю {PAttendMood * 100}%
                         </span>
                     </div>
                 </div>
