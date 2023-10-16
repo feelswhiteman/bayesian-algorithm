@@ -1,0 +1,31 @@
+table {
+    margin-top: 10px;
+}
+th {
+    background-color: #111;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+td {
+    padding: 10px 100px;
+    border: 1px solid #ccc;
+}
+
+tr:nth-child(even) {
+    background-color: #333;
+}
+
+tr:hover {
+    background-color: #555;
+}
+
+td,
+th {
+    padding: 3px 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
