@@ -25,6 +25,7 @@ const FrequencyTable: React.FC<TableProps> = ({ data }): ReactElement => {
     });
 
     const totalYesCount: number = Object.values(moodCounts).reduce((acc, count) => acc + count, 0);
+    const totalNoCount: number = data.length - totalYesCount;
 
     return (
         <div>
@@ -48,7 +49,7 @@ const FrequencyTable: React.FC<TableProps> = ({ data }): ReactElement => {
                     <tr>
                         <th>Всього</th>
                         <td>{totalYesCount}</td>
-                        <td>{data.length - totalYesCount}</td>
+                        <td>{totalNoCount}</td>
                     </tr>
                 </tbody>
             </table>

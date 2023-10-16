@@ -9,6 +9,10 @@ interface Data {
     attendance: "Так" | "Ні";
 }
 
+interface MoodCounts {
+    [key: string]: number;
+}
+
 const var1: Data[] = [
     { mood: "Веселий", attendance: "Так" },
     { mood: "Добрий", attendance: "Ні" },
@@ -37,12 +41,38 @@ function App() {
     const [moodInput, setMoodInput] = useState("");
     const [attendanceInput, setAttendanceInput] = useState("Так");
 
-    const [taskMoodInput, setTaskMoodInput] = useState("");
-    const [taskAttendanceInput, setTaskAttendanceInput] = useState("Так");
+    const [problemMoodInput, setProblemMoodInput] = useState("");
+    const [problemAttendanceInput, setProblemAttendanceInput] = useState("Так");
 
     const [inputValues, setInputValues] = useState<Data[]>([]);
 
     const uniqueMoods = [...new Set(inputValues.map((item) => item.mood))];
+    const moodCounts: MoodCounts = {};
+    const totalMoodCounts: MoodCounts = {};
+
+    inputValues.forEach((item) => {
+        const { mood, attendance } = item;
+
+        if (!moodCounts[mood]) {
+            moodCounts[mood] = 0;
+        }
+
+        if (!totalMoodCounts[mood]) {
+            totalMoodCounts[mood] = 0;
+        }
+
+        if (attendance === "Так") {
+            moodCounts[mood]++;
+        }
+
+        totalMoodCounts[mood]++;
+    });
+
+    const totalYesCount: number = Object.values(moodCounts).reduce(
+        (acc, count) => acc + count,
+        0
+    );
+    const totalNoCount: number = inputValues.length - totalYesCount;
 
     const handleAddRow = () => {
         if (attendanceInput !== "Так" && attendanceInput !== "Ні") return;
@@ -96,9 +126,9 @@ function App() {
                             P(
                             <select
                                 style={{ width: "60px" }}
-                                value={taskAttendanceInput}
+                                value={problemAttendanceInput}
                                 onChange={(e) =>
-                                    setTaskAttendanceInput(e.target.value)
+                                    setProblemAttendanceInput(e.target.value)
                                 }
                                 name="taskAttendanceSelected"
                             >
@@ -108,9 +138,9 @@ function App() {
                             |
                             <select
                                 style={{ width: "140px" }}
-                                value={taskMoodInput}
+                                value={problemMoodInput}
                                 onChange={(e) =>
-                                    setTaskMoodInput(e.target.value)
+                                    setProblemMoodInput(e.target.value)
                                 }
                                 name="taskMoodSelected"
                             >
@@ -120,8 +150,50 @@ function App() {
                                     </option>
                                 ))}
                             </select>
-                            ) = P({taskMoodInput}|{taskAttendanceInput}) * P (
-                            {taskAttendanceInput}) / P({taskMoodInput})
+                            ) = P({problemMoodInput}|{problemAttendanceInput}) * P (
+                            {problemAttendanceInput}) / P({problemMoodInput})
+                        </span>
+                        <br />
+                        <span>
+                            P({problemMoodInput}|{problemAttendanceInput}) ={" "}
+                            {moodCounts[problemMoodInput]} /{" "}
+                            {problemAttendanceInput === "Так"
+                                ? totalYesCount
+                                : totalNoCount}{" "}
+                            ={" "}
+                            {(
+                                moodCounts[problemMoodInput] /
+                                (problemAttendanceInput === "Так"
+                                    ? totalYesCount
+                                    : totalNoCount)
+                            ).toFixed(2)}
+                        </span>
+                        <br />
+                        <span>
+                            P({problemMoodInput}) ={" "}
+                            {totalMoodCounts[problemMoodInput]} /{" "}
+                            {inputValues.length} ={" "}
+                            {(
+                                totalMoodCounts[problemMoodInput] /
+                                inputValues.length
+                            ).toFixed(2)}
+                        </span>
+                        <br />
+                        <span>
+                            P({problemAttendanceInput}) ={" "}
+                            {problemAttendanceInput === "Так"
+                                ? totalYesCount
+                                : totalNoCount}{" "}
+                            / {inputValues.length} ={" "}
+                            {(
+                                (problemAttendanceInput === "Так"
+                                    ? totalYesCount
+                                    : totalNoCount) / inputValues.length
+                            ).toFixed(2)}
+                        </span>
+                        <br />
+                        <span>
+                            P({problemAttendanceInput}|{problemMoodInput}) =
                         </span>
                     </div>
                 </div>
